@@ -116,3 +116,4 @@ dmypy.json
 
 # Vscode
 .vscode/
+bash.exe.stackdump
