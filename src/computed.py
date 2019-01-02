@@ -2,7 +2,7 @@ from models import DeltaPoint
 import pendulum
 
 def compute_price_changes(start_point, trades, interval_seconds):
-    if interval_seconds not in [15, 20, 30, 60]:
+    if interval_seconds not in [15, 20, 30, 60, 120]:
         raise ValueError('Interval value not supported. Must be either 15, 20, 30, or 60')
     if not trades:
         raise ValueError('Trades cannot be empty')

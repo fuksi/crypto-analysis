@@ -68,7 +68,7 @@ class PgDb:
                         trade_count int NOT NULL
                     );
                     
-                    create index if not exists multi_idx_symbol_time_{table_name} on {table_name} (symbol, time DESC) 
+                    create unique index if not exists multi_idx_symbol_time_{table_name} on {table_name} (symbol, time DESC) 
                     '''
             
             cur.execute(query)

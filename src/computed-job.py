@@ -98,6 +98,4 @@ def compute_all_price_point():
             took = pendulum.now().diff(start).in_seconds()
             print(f'Task took {str(took)} seconds!')
 
-            
-
 compute_all_price_point()
