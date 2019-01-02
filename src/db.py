@@ -3,7 +3,7 @@ import pendulum
 import psycopg2
 import pyodbc
 
-from models import DeltaPoint
+from .models import DeltaPoint
 
 class PgDb:
     def __init__(self):

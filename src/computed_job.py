@@ -1,6 +1,6 @@
-from db import PgDb
-from computed import compute_price_changes
-from models import Trade
+from .db import PgDb
+from .computed import compute_price_changes
+from .models import Trade
 import pendulum
 
 db = PgDb()
@@ -25,10 +25,12 @@ def compute_all_price_point():
         no_common_pricepoints_count = 0
         no_common_pricepoints_count_limit = 10
 
-        execution_period_in_days = 1
+        execution_period_in_minutes = 6 
+        # execution_period_in_days = 1
         while True:
             start = pendulum.now()
-            end_time = start_time.add(days=execution_period_in_days)
+            # end_time = start_time.add(days=execution_period_in_days)
+            end_time = start_time.add(minutes=execution_period_in_minutes)
             all_pricepoints = {}
             
             # Get all price points
@@ -78,7 +80,7 @@ def compute_all_price_point():
                 print(f'No common pricepoint found from {start_time} to {end_time}')
 
                 no_common_pricepoints_count += 1
-                start_time = start_time.add(days=execution_period_in_days)
+                start_time = start_time.add(days=execution_period_in_minutes)
                 start_points = {}
 
                 if no_common_pricepoints_count > no_common_pricepoints_count_limit:
@@ -98,4 +100,3 @@ def compute_all_price_point():
             took = pendulum.now().diff(start).in_seconds()
             print(f'Task took {str(took)} seconds!')
 
-compute_all_price_point()

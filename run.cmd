@@ -6,4 +6,4 @@ IF EXIST "%DEPLOYMENT_TARGET%\requirements.txt" (
 )
 
 :: Then run
-D:\home\python364x64\python.exe src/computed-job.py
+D:\home\python364x64\python.exe main.py

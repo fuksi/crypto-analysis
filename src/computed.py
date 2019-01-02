@@ -1,4 +1,4 @@
-from models import DeltaPoint
+from .models import DeltaPoint
 import pendulum
 
 def compute_price_changes(start_point, trades, interval_seconds):
