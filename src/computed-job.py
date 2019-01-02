@@ -25,7 +25,7 @@ def compute_all_price_point():
         no_common_pricepoints_count = 0
         no_common_pricepoints_count_limit = 10
 
-        execution_period_in_days = 3
+        execution_period_in_days = 1
         while True:
             start = pendulum.now()
             end_time = start_time.add(days=execution_period_in_days)

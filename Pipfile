@@ -18,6 +18,7 @@ rope = "*"
 ipython = "*"
 jupyter = "*"
 pandas = "*"
+pipfile = "*"
 
 [dev-packages]
 ipdb = "*"
