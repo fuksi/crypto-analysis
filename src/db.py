@@ -10,7 +10,7 @@ class PgDb:
         self.create()
 
     def connect(self):
-        return psycopg2.connect(host="localhost",database="postgres", user="postgres", password="asdfQWER1234")
+        return psycopg2.connect(host="localhost",database="postgres", user="postgres", password="yaha")
 
     def create(self):
         with self.connect() as con:
@@ -50,18 +50,29 @@ class PgDb:
                     )
                 """)
 
-                cur.execute("""
-                    create table if not exists pricepoints_20 (
+                self.create_pricepoints_tables(cur)
+
+        con.close()
+
+    def create_pricepoints_tables(self, cur):
+        intervals = [15, 20, 30, 60, 120]
+        for interval in intervals:
+            table_name = f'pricepoints_{str(interval)}'
+            query = f'''create table if not exists {table_name}
+                    (
                         symbol varchar(10) NOT NULL,
                         time timestamptz NOT NULL,
                         price decimal(18,10) NOT NULL,
                         change decimal(18,10) NOT NULL,
                         change_pct decimal(10, 5) NOT NULL,
                         trade_count int NOT NULL
-                    )
-                """)
-
-        con.close()
+                    );
+                    
+                    create index if not exists multi_idx_symbol_time_{table_name} on {table_name} (symbol, time DESC) 
+                    '''
+            
+            cur.execute(query)
+                    
 
     def insert_candles(self, symbol, candles):
         for candle in candles:
@@ -78,15 +89,16 @@ class PgDb:
                 
         con.close()
 
-    def insert_pricepoints_20(self, symbol, pricepoints):
+    def insert_pricepoints(self, symbol_pricepoints_dict, interval):
+        table_name = f'pricepoints_{str(interval)}'
         with self.connect() as con:
             with con.cursor() as cur:
-                args = [cur.mogrify(f'(\'{symbol}\'' + ', %s::timestamptz, %s, %s, %s, %s)', x).decode('utf-8') for x in pricepoints]
-                args_str = ','.join(args)
-                cur.execute("""
-                    insert into pricepoints_20 (
-                        symbol, time, price, change, change_pct, trade_count)
-                    values """ + args_str + "on conflict do nothing")
+                for symbol, pricepoints in symbol_pricepoints_dict.items():
+                    args = [cur.mogrify(f'(\'{symbol}\'' + ', %s::timestamptz, %s, %s, %s, %s)', x).decode('utf-8') for x in pricepoints]
+                    args_str = ','.join(args)
+                    cur.execute(f'''insert into {table_name}
+                                (symbol, time, price, change, change_pct, trade_count)
+                                values {args_str} on conflict do nothing''')
 
         con.close()
 
@@ -168,12 +180,15 @@ class PgDb:
                 
         con.close()
 
-    def get_latest_pricepoints_20(self, symbols):
+    def get_latest_pricepoints(self, symbols, interval):
+        table_name = f'pricepoints_{str(interval)}'
         with self.connect() as con:
             with con.cursor() as cur:
-                cur.execute("""
-                    select symbol, time, price, change as d, change_pct as pct, trade_count as n from pricepoints_20 where time = (select max(time) from pricepoints_20)
-                """)
+                cur.execute(f'''select symbol, time, price, 
+                                change as d, change_pct as pct, trade_count as n
+
+                                from {table_name}
+                                where time = (select max(time) from {table_name})''')
 
                 columns = [col[0] for col in cur.description]
                 pricepoints = {}
@@ -187,12 +202,28 @@ class PgDb:
             
                 return pricepoints
          
+    def get_pricepoints(self, symbol, start, end, interval):
+        table_name = f'pricepoints_{str(interval)}'
+        with self.connect() as con:
+            with con.cursor() as cur:
+                cur.execute(f"""
+                    select symbol, time, price, change as d, change_pct as pct, trade_count as n 
+                    from {table_name} 
+                    where symbol = %s and time between %s::timestamptz and %s::timestamptz
+                """, (symbol, start, end))
+
+                columns = [col[0] for col in cur.description]
+                result = []
+                for row in cur.fetchall():
+                    result.append(dict(zip(columns, row)))
+
+                return result
 
     def get_trades(self, symbol, start, end):
         with self.connect() as con:
             with con.cursor() as cur:
                 cur.execute('''
-                    select time, price from tradings where symbol=%s and time between %s::timestamp and %s::timestamp order by time asc
+                    select time, price from tradings where symbol=%s and time between %s and %s order by time asc
                 ''', (symbol, start, end))
 
                 return cur.fetchall()
