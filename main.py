@@ -1,5 +1,5 @@
 from src.computed_job import compute_all_price_point
-from src.computed import get_pricepoints_winner_count, compute_price_changes
+from src.computed import get_pricepoints_winner_count, compute_price_changes, get_all_result
 from src.db import PgDb
 from src.simple_mapreduce import SimpleMapReduce
 from src.models import DeltaPoint, Trade
@@ -83,8 +83,8 @@ def map_func(start):
         }
 
             
-    with open(file_path, 'w') as outfile:
-        json.dump(result, outfile)
+    # with open(file_path, 'w') as outfile:
+    #     json.dump(result, outfile)
 
     return True 
 
@@ -92,25 +92,17 @@ def reduce_func(value):
     return value
 
 def main():
-    # db = PgDb()
-    # ccys = ['BTCUSD', 'ETHUSD', 'EOSUSD', 'XRPUSD', 'LTCUSD']
-    # get_pricepoints_winner_count(db, ccys, , '2017-08-10T00:00:00Z', 15)
-    # compute_all_price_point()
-    
-    # Use map reduce to compute sum of square
-    start = pendulum.parse('2018-01-01T00:00:00Z')
-    period_in_days = 365
-    end = start.add(days=(period_in_days - 1)).end_of('day')
+    # start = pendulum.parse('2019-01-01T00:00:00Z')
+    # period_in_days = 1
+    # end = start.add(days=(period_in_days - 1)).end_of('day')
 
-    inputs = []
-    while start < end:
-        inputs.append(start.to_iso8601_string())
-        start = start.add(days=1).start_of('day')
+    # inputs = []
+    # while start < end:
+    #     inputs.append(start.to_iso8601_string())
+    #     start = start.add(days=1).start_of('day')
 
-    # foo = map_func(inputs[0])
-    print(inputs)
-    mr = SimpleMapReduce(map_func, reduce_func)
-    result = mr(inputs)
+    # mr = SimpleMapReduce(map_func, reduce_func)
+    # mr(inputs)
 
 if __name__ == '__main__':
     main()

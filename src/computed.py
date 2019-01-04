@@ -1,7 +1,10 @@
 from .models import DeltaPoint
 from .db import PgDb
+
 import pendulum
 import pandas as pd
+import os
+import json
 
 def compute_price_changes(start_point, trades, interval_seconds, end_time=None):
     if not trades:
@@ -141,3 +144,20 @@ def get_pricepoints_winner_count(symbols, start, end, interval, prev_aggregation
             job_end = end
 
     return result
+
+def get_all_result():
+    result_path = './saved_result/'
+    files = sorted([int(f) for f in os.listdir(result_path)])
+
+    results = []
+    file_paths = [result_path + str(f) for f in files]
+    for path in file_paths:
+        with open(path) as f:
+            results.append(json.load(f))
+
+    return (files, results)
+
+
+
+
+
