@@ -117,3 +117,6 @@ dmypy.json
 # Vscode
 .vscode/
 bash.exe.stackdump
+
+# Settings
+local_settings.json

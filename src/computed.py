@@ -3,9 +3,7 @@ from .db import PgDb
 import pendulum
 import pandas as pd
 
-def compute_price_changes(start_point, trades, interval_seconds):
-    if interval_seconds not in [15, 20, 30, 60, 120]:
-        raise ValueError('Interval value not supported. Must be either 15, 20, 30, or 60')
+def compute_price_changes(start_point, trades, interval_seconds, end_time=None):
     if not trades:
         return []
     if not all(trades[i].time <= trades[i+1].time for i in range(len(trades) - 1)):
@@ -25,7 +23,9 @@ def compute_price_changes(start_point, trades, interval_seconds):
     result = []
     while True:
         next_time = start_point.time.add(seconds=interval_seconds)
-        if next_time > trades[-1].time:
+        if not end_time and next_time > trades[-1].time:
+            break
+        if end_time and next_time > end_time:
             break
 
         interval_trades = []

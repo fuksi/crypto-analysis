@@ -4,13 +4,14 @@ import psycopg2
 import pyodbc
 
 from .models import DeltaPoint
+from .settings import DB_SETTINGS
 
 class PgDb:
     def __init__(self):
         self.create()
 
     def connect(self):
-        return psycopg2.connect(host="localhost",database="postgres", user="postgres", password="yaha")
+        return psycopg2.connect(host=DB_SETTINGS['host'],database=DB_SETTINGS['database'], user=DB_SETTINGS['user'], password=DB_SETTINGS['password'])
 
     def create(self):
         with self.connect() as con:
@@ -202,6 +203,8 @@ class PgDb:
             
                 return pricepoints
          
+
+
     def get_pricepoints(self, symbol, start, end, interval):
         table_name = f'pricepoints_{str(interval)}'
         with self.connect() as con:
@@ -227,6 +230,15 @@ class PgDb:
                 ''', (symbol, start, end))
 
                 return cur.fetchall()
+
+    def get_closest_price_before_ts(self, symbol, timestamp):
+        with self.connect() as con:
+            with con.cursor() as cur:
+                cur.execute('''
+                    select price from tradings where symbol=%s and time <= %s order by time desc limit 1
+                ''', (symbol, timestamp))
+
+                return cur.fetchone()[0]
 
 class MssqlDatabase:
     def __init__(self):

@@ -19,6 +19,7 @@ ipython = "*"
 jupyter = "*"
 pandas = "*"
 pipfile = "*"
+openpyxl = "*"
 
 [dev-packages]
 ipdb = "*"
