@@ -20,6 +20,7 @@ jupyter = "*"
 pandas = "*"
 pipfile = "*"
 openpyxl = "*"
+matplotlib = "*"
 
 [dev-packages]
 ipdb = "*"

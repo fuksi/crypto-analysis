@@ -83,8 +83,8 @@ def map_func(start):
         }
 
             
-    # with open(file_path, 'w') as outfile:
-    #     json.dump(result, outfile)
+    with open(file_path, 'w') as outfile:
+        json.dump(result, outfile)
 
     return True 
 
@@ -92,17 +92,18 @@ def reduce_func(value):
     return value
 
 def main():
-    # start = pendulum.parse('2019-01-01T00:00:00Z')
+    start = pendulum.parse('2019-01-02T00:00:00Z')
+    end = pendulum.parse('2019-01-03T00:00:00Z')
     # period_in_days = 1
     # end = start.add(days=(period_in_days - 1)).end_of('day')
 
-    # inputs = []
-    # while start < end:
-    #     inputs.append(start.to_iso8601_string())
-    #     start = start.add(days=1).start_of('day')
+    inputs = []
+    while start < end:
+        inputs.append(start.to_iso8601_string())
+        start = start.add(days=1).start_of('day')
 
-    # mr = SimpleMapReduce(map_func, reduce_func)
-    # mr(inputs)
+    mr = SimpleMapReduce(map_func, reduce_func)
+    mr(inputs)
 
 if __name__ == '__main__':
     main()
