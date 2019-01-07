@@ -53,7 +53,7 @@ def map_func(start):
         # check if nothing moves
         # else find argmax
         for i in range(row_count):
-            row = [interval_data[symbol][i].d for symbol in symbols]
+            row = [interval_data[symbol][i].pct for symbol in symbols]
             if row == nothing_moved_delta_row:
                 winners.append('NONE')
                 movements[0] += 1
@@ -92,7 +92,7 @@ def reduce_func(value):
     return value
 
 def main():
-    start = pendulum.parse('2019-01-02T00:00:00Z')
+    start = pendulum.parse('2017-07-02T00:00:00Z')
     end = pendulum.parse('2019-01-03T00:00:00Z')
     # period_in_days = 1
     # end = start.add(days=(period_in_days - 1)).end_of('day')
